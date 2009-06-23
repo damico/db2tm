@@ -1,0 +1,1 @@
+java -classpath /usr/lib/db2tm/:/usr/lib/db2tm/db2tm.jar:/usr/lib/db2tm/jcurses.jar:/usr/lib/db2tm/db2jcc_license_cu.jar:/usr/lib/db2tm/db2jcc.jar:/usr/lib/db2tm/xercesImpl.jar org.jdamico.db2tm.view.Launch

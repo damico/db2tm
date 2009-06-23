@@ -1,6 +1,5 @@
 package org.jdamico.db2tm.view;
 
-import java.io.IOException;
 import java.text.DecimalFormat;
 import java.text.NumberFormat;
 import java.util.ArrayList;
@@ -19,7 +18,9 @@ import jcurses.widgets.WidgetsConstants;
 import jcurses.widgets.Window;
 
 import org.jdamico.db2tm.component.MultipleTester;
+import org.jdamico.db2tm.config.Constants;
 import org.jdamico.db2tm.dataobject.Server;
+import org.jdamico.db2tm.exception.DB2tmException;
 import org.jdamico.db2tm.util.PasswordField;
 
 
@@ -28,20 +29,35 @@ public class Launch {
 	
 	private static Map<String, ArrayList<Long>> sumMap = new HashMap<String, ArrayList<Long>>();
 	
-	
-	
-	public static void main(String[] args) throws Exception { 
+	public static void main(String[] args) { 
 
-
-		ArrayList<Server> srvList =  MultipleTester.getInstance().readConfiguration("/home/jdamico/workspace/db2tm/servers.xml");
+		
+		ArrayList<Server> srvList = null;;
+		try {
+			srvList = MultipleTester.getInstance().readConfiguration(Constants.SERVERS_XML);
+		} catch (DB2tmException e) {
+			exitWithMessage("\n\nInvalid '/etc/db2tm/servers.xml' file!\n" +
+							"Make sure that you have at least one server configured:\n" +
+							"<server dburl=\"db2://user@host:port/dbname\" dbalias=\"alias\" />\n\n");
+		}
 		char password[] = null;
+		
+		System.out.println(	"\n\n####### "+Constants.APPNAME+" #######");
+		System.out.println(	"#");
+		System.out.println(	"# Servers to be tested: "+srvList.size());
+		System.out.println(	"#");
+		
 		for(int k=0; k < srvList.size(); k++){
+			String passwd = null;
+			
 			try {
-				password = PasswordField.getPassword(System.in, "DB("+k+") password: ");
-			} catch (IOException ioe) {
+				password = PasswordField.getPassword(System.in, "# DB("+k+": "+srvList.get(k).getDbAlias()+") password: ");
+				passwd = String.valueOf(password);
+			} catch (Exception e) {
 				exitWithMessage("Invalid password char[]");
 			}
-			srvList.get(k).setPasswd(String.valueOf(password));
+			
+			srvList.get(k).setPasswd(passwd);
 			
 			sumMap.put(srvList.get(k).getDbAlias(), new ArrayList<Long>());
 			
@@ -67,14 +83,7 @@ public class Launch {
 
 		mgr.addWidget(btn, 0, 17, 38, 1, WidgetsConstants.ALIGNMENT_CENTER, WidgetsConstants.ALIGNMENT_CENTER);
 
-
-
-
-
 		boolean key = true;
-
-
-
 
 		w.show();
 
@@ -82,14 +91,9 @@ public class Launch {
 		InputChar c = null;
 		while (key) {
 
-
 			mgr.removeWidget(wd);
 			wd = new Label("Iteration: "+i, new CharColor(CharColor.WHITE, CharColor.GREEN));
 			mgr.addWidget(wd, 0, 0, 38, 5, WidgetsConstants.ALIGNMENT_LEFT, WidgetsConstants.ALIGNMENT_CENTER);
-
-
-
-
 
 			for(int j=0; j < srvList.size(); j++){
 				Widget l = getLabel(srvList.get(j), i);
@@ -97,15 +101,13 @@ public class Launch {
 				mgr.addWidget(l, 0, 1+j, 38, 5, WidgetsConstants.ALIGNMENT_LEFT, WidgetsConstants.ALIGNMENT_CENTER);
 			}
 
-
-
-
-
 			w.show();
 
-
-
-			Thread.currentThread().sleep(5000);
+			try {
+				Thread.currentThread().sleep(5000);
+			} catch (InterruptedException e) {
+				exitWithMessage("Unable to sleep main thread.");
+			}
 			i++;
 
 
