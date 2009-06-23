@@ -7,6 +7,7 @@ import java.util.ArrayList;
 
 import org.jdamico.db2tm.adaptor.DB2Adaptor;
 import org.jdamico.db2tm.dataobject.Server;
+import org.jdamico.db2tm.exception.DB2tmException;
 import org.jdamico.db2tm.util.DataValidation;
 import org.jdamico.db2tm.xml.ConverterFactory;
 
@@ -18,8 +19,11 @@ public class MultipleTester {
 		return INSTANCE;
 	}
 
-	public ArrayList<Server> readConfiguration(String fileNameLocation) throws Exception{
-		return ConverterFactory.getConverter(0, getFileContent(fileNameLocation)).exec();
+	public ArrayList<Server> readConfiguration(String fileNameLocation) throws DB2tmException {
+		
+		String xml = getFileContent(fileNameLocation);
+		if(DataValidation.getInstnace().isDocValid(xml)) return ConverterFactory.getConverter(0, xml).exec();
+		else return null;
 	}
 
 

@@ -1,6 +1,10 @@
 <?xml version="1.0" encoding="ISO-8859-1"?>
 <servers>
-	<server dburl="db2://jdamico@localhost:50000/CCMDB" dbalias="ccmdb" />
-	<server dburl="db2://jdamico@127.0.0.1:50000/AMIT" dbalias="amit" />
-	<server dburl="db2://damico@9.6.139.28:50000/sample" dbalias="phillip" />
+	
+	<!-- 
+	
+		<server dburl="db2://user@host:port/dbname" dbalias="alias" />
+	
+	 -->
+	
 </servers>
